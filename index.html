@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Barışalım mı?</title>
+<style>
+  :root{
+    --bg:#fff6fb;
+    --card:#fff;
+    --accent:#ff6f91;
+    --accent-2:#ffb3c6;
+    --text:#3b2b2b;
+    --soft:#ffdfee;
+  }
+  html,body{height:100%;margin:0;font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;background:linear-gradient(180deg,var(--bg),#fff1f7);color:var(--text)}
+  .center{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    box-sizing:border-box;
+  }
+
+  .card{
+    width:100%;
+    max-width:760px;
+    background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--card));
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(146,84,110,0.12);
+    padding:36px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  h1{
+    margin:0 0 8px 0;
+    font-size:34px;
+    letter-spacing:0.2px;
+    color:#3a2230;
+  }
+  p.lead{
+    margin:0 0 22px 0;
+    color:#5b3c47;
+    font-size:16px;
+    opacity:0.95;
+  }
+
+  .buttons{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+  button.btn{
+    border:0;
+    padding:14px 28px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:16px;
+    transition:transform .18s ease, box-shadow .18s ease;
+    box-shadow:0 6px 18px rgba(130,60,90,0.12);
+  }
+  button.btn:active{transform:translateY(2px)}
+  .btn-evet{
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:white;
+    transform-origin:center;
+  }
+  .btn-hayir{
+    background:transparent;
+    border:2px solid rgba(255,111,145,0.18);
+    color:var(--accent);
+  }
+
+  /* second screen */
+  .screen{display:none}
+  .screen.active{display:block}
+
+  /* Olur button special */
+  #olur{
+    background:linear-gradient(90deg,#ff9ab3,#ff6f91);
+    color:white;
+    padding:14px 36px;
+    border-radius:999px;
+    font-size:18px;
+    transition:transform .25s cubic-bezier(.2,.9,.2,1), box-shadow .25s;
+    box-shadow:0 10px 30px rgba(255,111,145,0.18);
+  }
+  #olur.pulse{
+    animation:pop 700ms infinite alternate;
+  }
+  @keyframes pop{
+    from{transform:scale(1)}
+    to{transform:scale(1.12) rotate(-1deg)}
+  }
+
+  /* final message */
+  .final{
+    margin-top:20px;
+    font-size:28px;
+    font-weight:800;
+    color:#6b2540;
+    letter-spacing:0.6px;
+    display:none;
+    text-shadow:0 6px 18px rgba(255,150,180,0.12);
+  }
+  .final.show{display:block}
+
+  /* hearts */
+  .heart{
+    position:absolute;
+    width:18px;height:18px;
+    transform:rotate(-45deg);
+    background:linear-gradient(180deg,#ff6f91,#ffb3c6);
+    border-radius:4px 4px 0 0;
+    opacity:0.95;
+    pointer-events:none;
+    animation:floatUp 2200ms ease-in forwards;
+  }
+  .heart:before,.heart:after{
+    content:"";
+    position:absolute;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:inherit;
+  }
+  .heart:before{top:-9px;left:0}
+  .heart:after{left:9px;top:0}
+
+  @keyframes floatUp{
+    0%{transform:translateY(0) rotate(-45deg) scale(.8);opacity:1}
+    100%{transform:translateY(-260px) rotate(-25deg) scale(1.4);opacity:0}
+  }
+
+  /* small responsive */
+  @media (max-width:420px){
+    h1{font-size:28px}
+    button.btn{padding:12px 18px;font-size:15px}
+    #olur{padding:12px 20px}
+    .card{padding:22px}
+  }
+
+  /* cute corner petals */
+  .petal{
+    position:absolute;
+    width:220px;height:220px;
+    background:radial-gradient(circle at 30% 30%,rgba(255,182,193,0.28),transparent 40%);
+    transform:rotate(25deg);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .petal.left{left:-80px;top:-80px}
+  .petal.right{right:-90px;bottom:-90px}
+</style>
+</head>
+<body>
+<div class="center">
+  <div class="card" id="card">
+    <div class="petal left"></div>
+    <div class="petal right"></div>
+
+    <!-- SCREEN 1 -->
+    <div class="screen screen-1 active" id="screen1">
+      <h1>Hala küs müyüz?</h1>
+      <p class="lead">Küslük bitsin mi?</p>
+      <div class="buttons">
+        <button class="btn btn-evet" id="yesBtn">Evet</button>
+        <button class="btn btn-hayir" id="noBtn">Hayır</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 2 -->
+    <div class="screen screen-2" id="screen2">
+      <h1>Barışalım güzelimm benim</h1>
+      <p class="lead">ister misin? ❤️</p>
+
+      <div class="buttons">
+        <button id="olur">Olur</button>
+        <button class="btn btn-hayir" id="no2">Hayır</button>
+      </div>
+
+      <div class="final" id="finalText">seni herşeyden çok seviyorum dilomm</div>
+    </div>
+
+    <!-- canvas for confetti -->
+    <canvas id="confettiCanvas" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  </div>
+</div>
+
+<script>
+  // Elements
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const screen1 = document.getElementById('screen1');
+  const screen2 = document.getElementById('screen2');
+  const no2 = document.getElementById('no2');
+  const olur = document.getElementById('olur');
+  const finalText = document.getElementById('finalText');
+  const confettiCanvas = document.getElementById('confettiCanvas');
+  const card = document.getElementById('card');
+
+  // Responsive canvas sizing
+  function fitCanvas(){
+    confettiCanvas.width = card.clientWidth * devicePixelRatio;
+    confettiCanvas.height = card.clientHeight * devicePixelRatio;
+    confettiCanvas.style.width = card.clientWidth + "px";
+    confettiCanvas.style.height = card.clientHeight + "px";
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  const ctx = confettiCanvas.getContext('2d');
+
+  window.addEventListener('resize', fitCanvas);
+  setTimeout(fitCanvas,50);
+
+  // Start: Evet -> show screen 2
+  yesBtn.addEventListener('click', () => {
+    screen1.classList.remove('active');
+    screen2.classList.add('active');
+    // small entrance
+    screen2.style.opacity = 0;
+    screen2.animate([{opacity:0},{opacity:1}],{duration:420,fill:'forwards'});
+  });
+
+  // Make initial hayır on screen1 dodge
+  noBtn.addEventListener('mouseenter', () => {
+    // move it a bit randomly to be playful
+    noBtn.style.transform = `translate(${Math.random()*18-9}px,${Math.random()*8-4}px)`;
+  });
+  noBtn.addEventListener('click', () => {
+    // cheeky shake if clicked
+    noBtn.animate([{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}],{duration:380});
+  });
+
+  // Behavior for second screen: each time 'Hayır' clicked, increase Olur size and make Hayır move.
+  let hayirClicks = 0;
+  no2.addEventListener('click', (e) => {
+    hayirClicks++;
+    // increase Olur scale
+    const scale = 1 + Math.min(hayirClicks * 0.14, 2.2); // caps growth
+    olur.style.transform = `scale(${scale})`;
+    // add little glow
+    olur.style.boxShadow = `0 14px 40px rgba(255,111,145,${Math.min(0.22 + hayirClicks*0.04,0.6)})`;
+
+    // move 'Hayır' to a random nearby position inside card
+    const cardRect = card.getBoundingClientRect();
+    const btnRect = no2.getBoundingClientRect();
+    // compute new relative offsets (clamped)
+    const maxX = Math.max(cardRect.width - btnRect.width - 40, 20);
+    const maxY = Math.max(cardRect.height - btnRect.height - 40, 20);
+    const x = Math.random() * maxX - (cardRect.width/2 - btnRect.width/2);
+    const y = Math.random() * maxY - (cardRect.height/2 - btnRect.height/2);
+    no2.style.position = 'relative';
+    no2.style.left = `${x}px`;
+    no2.style.top = `${y}px`;
+    no2.style.transition = 'left .28s ease, top .28s ease, transform .18s';
+
+    // playful wobble
+    no2.animate([{transform:'rotate(0)'},{transform:'rotate(-6deg)'},{transform:'rotate(6deg)'},{transform:'rotate(0)'}],{duration:420});
+
+    // After some clicks, disable 'Hayır' and force Olur to pulse
+    if(hayirClicks >= 5){
+      no2.disabled = true;
+      no2.style.opacity = 0.38;
+      no2.style.cursor = 'not-allowed';
+      olur.classList.add('pulse');
+      // small message nudge
+      const nudge = document.createElement('div');
+      nudge.textContent = "Tamam yaaa, olur'a bas artık ❤️";
+      nudge.style.fontSize = '13px';
+      nudge.style.marginTop = '12px';
+      nudge.style.color = '#7a3a4a';
+      nudge.style.opacity = '0';
+      screen2.appendChild(nudge);
+      nudge.animate([{opacity:0, transform:'translateY(6px)'},{opacity:1, transform:'translateY(0)'}],{duration:420,fill:'forwards'});
+    }
+  });
+
+  // Olur click -> confetti, hearts, final text
+  olur.addEventListener('click', () => {
+    // prevent multiple triggers
+    if(olur.dataset.done) return;
+    olur.dataset.done = "1";
+
+    // show final text
+    finalText.classList.add('show');
+
+    // play confetti and hearts
+    launchConfetti(50);
+    spawnHearts(10);
+
+    // gentle scale
+    olur.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:900});
+
+    // small sparkle around the text
+    sparkleFinal();
+  });
+
+  /* ----- Hearts ----- */
+  function spawnHearts(n=6){
+    for(let i=0;i<n;i++){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      // random start inside card
+      const left = 40 + Math.random() * (card.clientWidth - 80);
+      const top = card.clientHeight - 40 - Math.random()*20;
+      h.style.left = left + 'px';
+      h.style.top = top + 'px';
+      h.style.opacity = 0;
+      h.style.transform = 'scale(0.9) rotate(-45deg)';
+      card.appendChild(h);
+      // fade-in and animate
+      h.animate([{opacity:0, transform:'translateY(0) scale(.8)'},{opacity:1, transform:'translateY(-20px) scale(1)'}],{duration:240, fill:'forwards'});
+      // remove after animation
+      setTimeout(()=> h.remove(), 2400 + Math.random()*1200);
+    }
+  }
+
+  /* ----- Confetti (simple) ----- */
+  function launchConfetti(amount=40){
+    fitCanvas();
+    let particles = [];
+    const colors = ['#ff6f91','#ffb3c6','#ffd1e6','#ff9aa2','#ffe3ef'];
+
+    for(let i=0;i<amount;i++){
+      particles.push({
+        x: Math.random() * confettiCanvas.width / devicePixelRatio,
+        y: Math.random() * confettiCanvas.height / devicePixelRatio / 3,
+        vx: (Math.random()-0.5) * 5,
+        vy: 2 + Math.random() * 4,
+        r: 6 + Math.random()*8,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        rot: Math.random()*360,
+        vr: (Math.random()-0.5)*10
+      });
+    }
+
+    let life = 2000; // ms
+    const start = performance.now();
+
+    function frame(t){
+      const dt = t - start;
+      ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+      for(const p of particles){
+        // physics
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.08; // gravity
+        p.rot += p.vr;
+
+        // draw as small rotated rectangle (looking like confetti)
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*0.6);
+        ctx.restore();
+      }
+      // fade out by reducing global alpha near end
+      const elapsed = t - start;
+      if(elapsed < life + 800){
+        requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ----- sparkle effect around final text ----- */
+  function sparkleFinal(){
+    const box = finalText;
+    let sparks = 18;
+    for(let i=0;i<sparks;i++){
+      const s = document.createElement('div');
+      s.style.position = 'absolute';
+      s.style.width = '8px';
+      s.style.height = '8px';
+      s.style.borderRadius = '50%';
+      s.style.background = i%2? 'rgba(255,182,193,0.95)':'rgba(255,111,145,0.95)';
+      // position around finalText
+      const rect = box.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const left = (rect.left - cardRect.left) + rect.width/2 + (Math.random()*220-110);
+      const top = (rect.top - cardRect.top) + rect.height/2 + (Math.random()*80-40);
+      s.style.left = left + 'px';
+      s.style.top = top + 'px';
+      s.style.pointerEvents = 'none';
+      s.style.opacity = '0';
+      s.style.transform = 'scale(.4)';
+      card.appendChild(s);
+      s.animate([{opacity:0, transform:'scale(.6) translateY(8px)'},{opacity:1, transform:'scale(1) translateY(-20px)'},{opacity:0, transform:'scale(.2) translateY(-40px)'}],{duration:1600 + Math.random()*800, easing:'cubic-bezier(.2,.9,.2,1)', fill:'forwards'});
+      setTimeout(()=> s.remove(), 2200 + Math.random()*1200);
+    }
+  }
+
+  // small friendly nudge: if user tries to close or go back, optional (kept simple)
+  // (Not intrusive — commented)
+  // window.onbeforeunload = () => "Gitmeden önce bir kere daha düşün?";
+
+</script>
+</body>
+</html>
